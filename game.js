@@ -1,104 +1,86 @@
+let state = "start";
+let birdY;
+let velocityY;
+let acceleration = 0.2;
+let thrust = -0.6;
+let nestY = 422;
+let safeLandingSpeed = 3;
+let resultMessage = "";
+let nestWidth = 160;
+let birdX;
+
+//Initialization or reset of the game
+function resetGame() {
+  birdY = 100; 
+  velocityY = 0; 
+  birdX = 500;
+  resultMessage = ""; 
+  state = "start"; 
+}
+
 function setup() {
-  createCanvas(700, 550);
+  createCanvas(700, 500);
+  resetGame(); 
 }
-
-function bird(x, y) {
-  //Rear wing
-  noStroke();
-  fill(255, 255, 255);
-  push();
-  translate(x + 57, y - 5);
-  rotate(2.2);
-  arc(0, 0, 150, 100, 0, PI);
-  pop();
-
-  //Body
-  fill(0, 150, 255);
-  noStroke();
-  arc(x, y, 250, 150, 0, PI);
-
-  //Head
-  fill(0, 150, 255);
-  noStroke();
-  push();
-  translate(x + 87, y + 9);
-  rotate(3.14);
-  arc(0, 0, 75, 75, 0, PI);
-  pop();
-
-  //Front wing
-  noStroke();
-  fill(20, 52, 164);
-  push();
-  translate(x - 14, y - 35);
-  rotate(0.5);
-  arc(0, 0, 150, 100, 0, PI);
-  pop();
-
-  //Belly
-  fill(255);
-  noStroke();
-  beginShape();
-  vertex(x - 50, y + 69);
-  bezierVertex(x - 50, y + 69, x + 10, y, x + 80, y + 58);
-  vertex(x - 50, y + 69);
-  bezierVertex(x - 50, y + 69, x + 10, y + 90, x + 80, y + 58);
-  endShape();
-
-  //Eye
-  fill(0, 0, 0);
-  noStroke();
-  push();
-  translate(x + 105, y - 10);
-  scale(9);
-  ellipse(0, 0, 1, 1);
-  pop();
-
-  //Worm
-  noFill();
-  stroke(222, 49, 99);
-  strokeWeight(1);
-  beginShape();
-  vertex(x + 160, y - 20);
-  bezierVertex(x + 160, y - 20, x + 138, y, x + 160, y + 15);
-  endShape();
-
-  //Nose
-  fill(54, 69, 79);
-  noStroke();
-  triangle(x + 122, y - 5, x + 150, y, x + 124, y + 10);
-
-  //Tail
-  fill(0, 150, 255);
-  noStroke();
-  triangle(x - 175, y - 30, x - 123, y, x - 180, y);
-
-  //Legs
-  noFill();
-  stroke(54, 69, 79);
-  strokeWeight(1);
-  //Left leg
-  line(x - 40, y + 72, x - 20, y + 105);
-  line(x - 20, y + 105, x, y + 100);
-  line(x - 20, y + 105, x, y + 105);
-  line(x - 20, y + 105, x, y + 110);
-
-  //Right leg
-  line(x + 45, y + 71, x + 65, y + 105);
-  line(x + 65, y + 105, x + 85, y + 100);
-  line(x + 65, y + 105, x + 85, y + 105);
-  line(x + 65, y + 105, x + 85, y + 110);
-}
-
-let y = -100;
-let direction = "downward";
 
 function draw() {
-  //Background
+  if (state === "start") {
+    startScreen();
+  } else if (state === "game") {
+    gameScreen();
+    gravity();
+    checkLanding();
+  } else if (state === "result") {
+    resultScreen();
+  }
+}
+
+//Start screen
+function startScreen() {
+  background(66, 242, 245);
+  stroke(0, 0, 0);
+  strokeWeight(1);
+  fill(66, 173, 245);
+  rect(245, 190, 250, 65, 10 );
+  noStroke();
+  fill(255, 255, 255);
+  textAlign(CENTER);
+  textSize(32);
+  text("Bird Generation", width / 2, height / 2 - 20);
+  stroke(0, 0, 0);
+  strokeWeight(1);
+  fill(25, 83, 230);
+  textSize(20);
+  text("Click to Start", width / 2, height / 2 + 30);
+  fill(0, 0, 0);
+  textSize(16);
+  text("When the game starts, press SPACE to control the bird", width / 2, height / 2 + 200);
+  
+  //Clouds for the start screen
+  function clouds(x, m, w, h) {
+    noStroke();
+    fill(255, 255, 255);
+    ellipse(550, 50, 80, 50);
+    ellipse(600, 190, 80, 50);
+    ellipse(170, 105, 80, 50);
+    ellipse(90, 295, 80, 50);
+    ellipse(x + 5, m, w, h);
+    ellipse(x + 25, m, w, h);
+    ellipse(x + 50, m, w, h);
+    ellipse(x + 70, m, w, h);
+    ellipse(x + 95, m, w, h);
+  }
+  clouds(500, 77, 40, 40);
+  clouds(550, 220, 40, 40);
+  clouds(120, 130, 40, 40);
+  clouds(40, 320, 40, 40);
+}
+
+//Game screen
+function gameScreen() {
   background(164, 242, 252);
 
-  //Clouds
-
+//Clouds
   function clouds(x, m, w, h) {
     noStroke();
     fill(255, 255, 255);
@@ -113,7 +95,8 @@ function draw() {
   clouds(500, 77, 40, 40);
   clouds(550, 220, 40, 40);
 
-  //Tree
+//Tree
+//Tree trunk
   noStroke();
   fill(135, 68, 39);
   rect(0, 170, 55, 500);
@@ -122,7 +105,7 @@ function draw() {
   ellipse(20, 140, 250, 250);
   strokeWeight(2);
   stroke(161, 110, 22);
-
+  //Decor of the trunk
   function decor(x, d, x1, d1) {
     line(x, d, x1, d1);
     line(x + 35, d + 5, x1 + 28, d1);
@@ -142,10 +125,10 @@ function draw() {
   }
   decor(5, 290, 6, 300);
 
-  function tree(x, e, w, h) {
+//Tree branch
+  function branch(x, e, w, h) {
     noStroke();
     fill(78, 135, 39);
-
     ellipse(x, e, w, h);
     ellipse(x + 30, e, w, h);
     ellipse(x + 55, e, w, h);
@@ -166,25 +149,221 @@ function draw() {
     ellipse(x + 40, e + 220, w, h);
     ellipse(x + 10, e + 220, w, h);
   }
-  tree(0, 30, 50, 50);
+  branch(0, 30, 50, 50);
 
+//Nest
+  noStroke();
+  fill(230, 164, 41);
+  ellipse(310, 430, 200, 95);
+  fill(168, 120, 30);
+  ellipse(310, nestY, nestWidth, 55);
+
+//Decor of the nest
+  stroke(128, 90, 22);
+  line(235, 395, 240, 402);
+  line(375, 402, 381, 395);
+  line(210, 420, 218, 425);
+  line(210, 445, 220, 440);
+  line(405, 425, 413, 420);
+  line(400, 440, 413, 445);
+  noStroke();
+
+  //Eggs
+  let x = 270;
+  let e = 405;
+  
+  //The first egg
+  noStroke();
+  fill(247, 240, 225);
+  push();
+  translate(x, e);
+  rotate(-0.2);
+  ellipse(0, 0, 45, 65);
+  pop();
+  
+  //The second egg
+  noStroke();
+  fill(247, 240, 225);
+  push();
+  rotate(0.2);
+  ellipse(425, 328, 45, 65);
+  pop();
+  
+  //The third egg
+  noStroke();
+  fill(247, 240, 225);
+  ellipse(310, 405, 45, 65);
+
+  //Spots on the eggs
+  function spots(x, s, w, h) {
+    noStroke();
+    fill(168, 156, 133);
+    ellipse(x, s, w, h);
+    ellipse(x + 25, s + 30, w, h);
+  }
+  spots(255, 392, 8, 10);
+  spots(298, 390, 8, 10);
+  spots(338, 392, 8, 10);
+
+  //Bird
+  function bird(x, y) {
+    //Rear wing
+    noStroke();
+    fill(255, 255, 255);
+    push();
+    translate(x + 57, y - 5);
+    rotate(2.2);
+    arc(0, 0, 150, 100, 0, PI);
+    pop();
+
+    //Body
+    fill(0, 150, 255);
+    noStroke();
+    arc(x, y, 250, 150, 0, PI);
+
+    //Head
+    fill(0, 150, 255);
+    noStroke();
+    push();
+    translate(x + 87, y + 9);
+    rotate(3.14);
+    arc(0, 0, 75, 75, 0, PI);
+    pop();
+
+    //Front wing
+    noStroke();
+    fill(20, 52, 164);
+    push();
+    translate(x - 14, y - 35);
+    rotate(0.5);
+    arc(0, 0, 150, 100, 0, PI);
+    pop();
+
+    //Belly
+    fill(255);
+    noStroke();
+    beginShape();
+    vertex(x - 50, y + 69);
+    bezierVertex(x - 50, y + 69, x + 10, y, x + 80, y + 58);
+    vertex(x - 50, y + 69);
+    bezierVertex(x - 50, y + 69, x + 10, y + 90, x + 80, y + 58);
+    endShape();
+
+    //Eye
+    fill(0, 0, 0);
+    noStroke();
+    push();
+    translate(x + 105, y - 10);
+    scale(9);
+    ellipse(0, 0, 1, 1);
+    pop();
+
+    //Worm
+    noFill();
+    stroke(222, 49, 99);
+    strokeWeight(1);
+    beginShape();
+    vertex(x + 160, y - 20);
+    bezierVertex(x + 160, y - 20, x + 138, y, x + 160, y + 15);
+    endShape();
+
+    //Nose
+    fill(54, 69, 79);
+    noStroke();
+    triangle(x + 122, y - 5, x + 150, y, x + 124, y + 10);
+
+    //Tail
+    fill(0, 150, 255);
+    noStroke();
+    triangle(x - 175, y - 30, x - 123, y, x - 180, y);
+
+    //Legs
+    noFill();
+    stroke(54, 69, 79);
+    strokeWeight(1);
+    //Left leg
+    line(x - 40, y + 72, x - 20, y + 105);
+    line(x - 20, y + 105, x, y + 100);
+    line(x - 20, y + 105, x, y + 105);
+    line(x - 20, y + 105, x, y + 110);
+
+    //Right leg
+    line(x + 45, y + 71, x + 65, y + 105);
+    line(x + 65, y + 105, x + 85, y + 100);
+    line(x + 65, y + 105, x + 85, y + 105);
+    line(x + 65, y + 105, x + 85, y + 110);
+  }
+  
+  //Bird drawing
   push();
   translate(0, 0);
-  scale(0.5);
-  bird(600, y);
+  scale(0.6);
+  bird(birdX, birdY);
   pop();
+}
 
-  if (direction === "downward") {
-    if (y < 600) {
-      y = y + 10;
+//Result screen
+function resultScreen() {
+  background(250, 218, 137);
+  stroke(0, 0, 0);
+  strokeWeight(1);
+  fill(150, 115, 50);
+  rect(245, 190, 250, 65, 10 );
+  fill(255, 255, 255);
+  textAlign(CENTER);
+  textSize(32);
+  text(resultMessage, width / 2, height / 2 - 20);
+  stroke(0, 0, 0);
+  strokeWeight(1);
+  fill(120, 84, 17);
+  textSize(20);
+  text("Click to Restart", width / 2, height / 2 + 50);
+}
+
+//Gravity
+function gravity() {
+  velocityY += acceleration;
+
+//Thrust with spacebar
+  if (keyIsDown(32)) {
+    velocityY += thrust;
+  }
+
+//Bird position update
+  birdY += velocityY;
+
+//Keeping the bird within the screen
+  birdY = constrain(birdY, 0, height);
+}
+
+//Cleck landing
+function checkLanding() {
+  let birdCenter = birdX;
+  let nestLeft = 500 - nestWidth / 2 - 10; // Adjust left boundary based on the nest's visual center
+  let nestRight = 500 + nestWidth / 2 + 10; // Adjust right boundary
+
+  if (birdY >= nestY - 30 && birdY <= nestY + 10) {
+    if (
+      abs(velocityY) <= safeLandingSpeed &&
+      birdCenter >= nestLeft &&
+      birdCenter <= nestRight
+    ) {
+      //When bird landed safely
+      resultMessage = "Great Job!";
+      state = "result";
     } else {
-      direction = "upward";
+      //When bird landed too quickly
+      resultMessage = "Try again!";
+      state = "result";
     }
-  } else if (direction === "upward") {
-    if (y > 100) {
-      y = y - 10;
-    } else {
-      direction = "downward";
-    }
+  }
+}
+
+//Start or restart the game
+function mouseClicked() {
+  if (state === "start") {
+    state = "game";
+  } else if (state === "result") {
+    resetGame();
   }
 }
