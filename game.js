@@ -2,7 +2,7 @@ let state = "start";
 let birdY;
 let velocityY;
 let acceleration = 0.2;
-let lift = - 0.6;
+let lift = -0.6;
 let nestY = 422;
 let safeLandingSpeed = 3;
 let resultMessage = "";
@@ -299,7 +299,7 @@ function resultScreen() {
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(150, 115, 50);
-  rect(245, 190, 250, 65, 10);
+  rect(200, 200, 250, 65, 10);
   fill(255, 255, 255);
   textAlign(CENTER);
   textSize(32);
@@ -326,12 +326,26 @@ function gravity() {
   //Keeping the bird within the screen
   birdY = constrain(birdY, 0, height);
 }
+
 //Cleck landing
 function checkLanding() {
   let birdCenter = birdX;
   let nestLeft = 500 - nestWidth / 2 - 10; 
   let nestRight = 500 + nestWidth / 2 + 10;
+
+  if (birdY >= nestY - 30 && birdY <= nestY + 10) {
+    if (abs(velocityY) <= safeLandingSpeed && birdCenter >= nestLeft && birdCenter <= nestRight) {
+      //When bird landed safely
+      resultMessage = "Great Job!";
+      state = "result";
+    } else {
+      //When bird landed too quickly
+      resultMessage = "Try again!";
+      state = "result";
+    }
   }
+}
+
 
 //Start or restart the game
 function mouseClicked() {
@@ -341,6 +355,3 @@ function mouseClicked() {
     resetGame();
   }
 }
-
-    
-   
