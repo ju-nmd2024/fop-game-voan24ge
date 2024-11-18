@@ -1,17 +1,23 @@
 let state = "start";
 let birdY;
+let velocityY;
+let acceleration = 0.2;
+let lift = - 0.6;
 let nestY = 422;
+let safeLandingSpeed = 3;
 let resultMessage = "";
 let nestWidth = 160;
 let birdX;
 
+
 //Initialization or reset of the game
 function resetGame() {
-    birdY = 100;
-    birdX = 500;
-    resultMessage = "";
-    state = "start";
-  }
+  birdY = 100;
+  velocityY = 0;
+  birdX = 500;
+  resultMessage = "";
+  state = "start";
+}
 
 function setup() {
   createCanvas(700, 500);
@@ -23,6 +29,8 @@ function draw() {
     startScreen();
   } else if (state === "game") {
     gameScreen();
+    gravity();
+    checkLanding();
   } else if (state === "result") {
     resultScreen();
   }
@@ -47,11 +55,7 @@ function startScreen() {
   text("Click to Start", width / 2, height / 2 + 30);
   fill(0, 0, 0);
   textSize(16);
-  text(
-    "When the game starts, press SPACE to control the bird",
-    width / 2,
-    height / 2 + 200
-  );
+  text("When the game starts, press SPACE to control the bird", width / 2, height / 2 + 200);
 
   //Clouds for the start screen
   function clouds(x, m, w, h) {
@@ -307,6 +311,27 @@ function resultScreen() {
   text("Click to Restart", width / 2, height / 2 + 50);
 }
 
+//Gravity and movement
+function gravity() {
+  velocityY += acceleration;
+
+  //Lift with spacebar
+  if (keyIsDown(32)) {
+    velocityY += lift;
+  }
+
+  //Bird position update
+  birdY += velocityY;
+
+  //Keeping the bird within the screen
+  birdY = constrain(birdY, 0, height);
+}
+//Cleck landing
+function checkLanding() {
+  let birdCenter = birdX;
+  let nestLeft = 500 - nestWidth / 2 - 10; 
+  let nestRight = 500 + nestWidth / 2 + 10;
+  }
 
 //Start or restart the game
 function mouseClicked() {
@@ -316,3 +341,6 @@ function mouseClicked() {
     resetGame();
   }
 }
+
+    
+   
