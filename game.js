@@ -1,26 +1,21 @@
 let state = "start";
 let birdY;
-let velocityY;
-let acceleration = 0.2;
-let thrust = -0.6;
 let nestY = 422;
-let safeLandingSpeed = 3;
 let resultMessage = "";
 let nestWidth = 160;
 let birdX;
 
 //Initialization or reset of the game
 function resetGame() {
-  birdY = 100; 
-  velocityY = 0; 
-  birdX = 500;
-  resultMessage = ""; 
-  state = "start"; 
-}
+    birdY = 100;
+    birdX = 500;
+    resultMessage = "";
+    state = "start";
+  }
 
 function setup() {
   createCanvas(700, 500);
-  resetGame(); 
+  resetGame();
 }
 
 function draw() {
@@ -28,8 +23,6 @@ function draw() {
     startScreen();
   } else if (state === "game") {
     gameScreen();
-    gravity();
-    checkLanding();
   } else if (state === "result") {
     resultScreen();
   }
@@ -41,7 +34,7 @@ function startScreen() {
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(66, 173, 245);
-  rect(245, 190, 250, 65, 10 );
+  rect(200, 200, 250, 65, 10);
   noStroke();
   fill(255, 255, 255);
   textAlign(CENTER);
@@ -54,8 +47,12 @@ function startScreen() {
   text("Click to Start", width / 2, height / 2 + 30);
   fill(0, 0, 0);
   textSize(16);
-  text("When the game starts, press SPACE to control the bird", width / 2, height / 2 + 200);
-  
+  text(
+    "When the game starts, press SPACE to control the bird",
+    width / 2,
+    height / 2 + 200
+  );
+
   //Clouds for the start screen
   function clouds(x, m, w, h) {
     noStroke();
@@ -80,7 +77,7 @@ function startScreen() {
 function gameScreen() {
   background(164, 242, 252);
 
-//Clouds
+  //Clouds
   function clouds(x, m, w, h) {
     noStroke();
     fill(255, 255, 255);
@@ -95,8 +92,8 @@ function gameScreen() {
   clouds(500, 77, 40, 40);
   clouds(550, 220, 40, 40);
 
-//Tree
-//Tree trunk
+  //Tree
+  //Tree trunk
   noStroke();
   fill(135, 68, 39);
   rect(0, 170, 55, 500);
@@ -125,7 +122,7 @@ function gameScreen() {
   }
   decor(5, 290, 6, 300);
 
-//Tree branch
+  //Tree branch
   function branch(x, e, w, h) {
     noStroke();
     fill(78, 135, 39);
@@ -151,27 +148,17 @@ function gameScreen() {
   }
   branch(0, 30, 50, 50);
 
-//Nest
+  //Nest
   noStroke();
   fill(230, 164, 41);
   ellipse(310, 430, 200, 95);
   fill(168, 120, 30);
   ellipse(310, nestY, nestWidth, 55);
 
-//Decor of the nest
-  stroke(128, 90, 22);
-  line(235, 395, 240, 402);
-  line(375, 402, 381, 395);
-  line(210, 420, 218, 425);
-  line(210, 445, 220, 440);
-  line(405, 425, 413, 420);
-  line(400, 440, 413, 445);
-  noStroke();
-
   //Eggs
   let x = 270;
   let e = 405;
-  
+
   //The first egg
   noStroke();
   fill(247, 240, 225);
@@ -180,7 +167,7 @@ function gameScreen() {
   rotate(-0.2);
   ellipse(0, 0, 45, 65);
   pop();
-  
+
   //The second egg
   noStroke();
   fill(247, 240, 225);
@@ -188,7 +175,7 @@ function gameScreen() {
   rotate(0.2);
   ellipse(425, 328, 45, 65);
   pop();
-  
+
   //The third egg
   noStroke();
   fill(247, 240, 225);
@@ -293,7 +280,7 @@ function gameScreen() {
     line(x + 65, y + 105, x + 85, y + 105);
     line(x + 65, y + 105, x + 85, y + 110);
   }
-  
+
   //Bird drawing
   push();
   translate(0, 0);
@@ -308,7 +295,7 @@ function resultScreen() {
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(150, 115, 50);
-  rect(245, 190, 250, 65, 10 );
+  rect(245, 190, 250, 65, 10);
   fill(255, 255, 255);
   textAlign(CENTER);
   textSize(32);
@@ -320,44 +307,6 @@ function resultScreen() {
   text("Click to Restart", width / 2, height / 2 + 50);
 }
 
-//Gravity
-function gravity() {
-  velocityY += acceleration;
-
-//Thrust with spacebar
-  if (keyIsDown(32)) {
-    velocityY += thrust;
-  }
-
-//Bird position update
-  birdY += velocityY;
-
-//Keeping the bird within the screen
-  birdY = constrain(birdY, 0, height);
-}
-
-//Cleck landing
-function checkLanding() {
-  let birdCenter = birdX;
-  let nestLeft = 500 - nestWidth / 2 - 10; // Adjust left boundary based on the nest's visual center
-  let nestRight = 500 + nestWidth / 2 + 10; // Adjust right boundary
-
-  if (birdY >= nestY - 30 && birdY <= nestY + 10) {
-    if (
-      abs(velocityY) <= safeLandingSpeed &&
-      birdCenter >= nestLeft &&
-      birdCenter <= nestRight
-    ) {
-      //When bird landed safely
-      resultMessage = "Great Job!";
-      state = "result";
-    } else {
-      //When bird landed too quickly
-      resultMessage = "Try again!";
-      state = "result";
-    }
-  }
-}
 
 //Start or restart the game
 function mouseClicked() {
