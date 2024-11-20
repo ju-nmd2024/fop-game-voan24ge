@@ -3,12 +3,13 @@ let birdY;
 let velocityY;
 let acceleration = 0.2;
 let lift = -0.6;
-let nestY = 422;
+const nestY = 422;
+const nestWidth = 160;
 let safeLandingSpeed = 3;
 let resultMessage = "";
-let nestWidth = 160;
 let birdX;
-
+let nestContent = "eggs";
+let gameIsRunning = false;
 
 //Initialization or reset of the game
 function resetGame() {
@@ -17,6 +18,7 @@ function resetGame() {
   birdX = 500;
   resultMessage = "";
   state = "start";
+  nestContent = "eggs";
 }
 
 function setup() {
@@ -28,13 +30,19 @@ function draw() {
   if (state === "start") {
     startScreen();
   } else if (state === "game") {
+    gameIsRunning = true;
     gameScreen();
     gravity();
     checkLanding();
-  } else if (state === "result") {
+  } else if (state === "result" && gameIsRunning === false) {
     resultScreen();
   }
 }
+
+const rectWidth = 250;
+const rectHeight = 65;
+const rectX = (700 - rectWidth) / 2;
+const rectY = (500 - rectHeight) / 2;
 
 //Start screen
 function startScreen() {
@@ -42,20 +50,24 @@ function startScreen() {
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(66, 173, 245);
-  rect(200, 200, 250, 65, 10);
+  rect(rectX, rectY, rectWidth, rectHeight, 10);
   noStroke();
   fill(255, 255, 255);
   textAlign(CENTER);
   textSize(32);
-  text("Bird Generation", width / 2, height / 2 - 20);
+  text("AvianRise", 700 / 2, 500 / 2 + 10);
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(25, 83, 230);
   textSize(20);
-  text("Click to Start", width / 2, height / 2 + 30);
+  text("Click to Start", 700 / 2, 500 / 2 + 60);
   fill(0, 0, 0);
   textSize(16);
-  text("When the game starts, press SPACE to control the bird", width / 2, height / 2 + 200);
+  text(
+    "When the game starts, press SPACE to control the bird",
+    700 / 2,
+    500 / 2 + 200
+  );
 
   //Clouds for the start screen
   function clouds(x, m, w, h) {
@@ -158,131 +170,23 @@ function gameScreen() {
   ellipse(310, 430, 200, 95);
   fill(168, 120, 30);
   ellipse(310, nestY, nestWidth, 55);
-
-  //Eggs
-  let x = 270;
-  let e = 405;
-
-  //The first egg
+  //Decor of the nest
+  stroke(128, 90, 22);
+  line(235, 395, 240, 402);
+  line(375, 402, 381, 395);
+  line(210, 420, 218, 425);
+  line(210, 445, 220, 440);
+  line(405, 425, 413, 420);
+  line(400, 440, 413, 445);
   noStroke();
-  fill(247, 240, 225);
-  push();
-  translate(x, e);
-  rotate(-0.2);
-  ellipse(0, 0, 45, 65);
-  pop();
 
-  //The second egg
-  noStroke();
-  fill(247, 240, 225);
-  push();
-  rotate(0.2);
-  ellipse(425, 328, 45, 65);
-  pop();
-
-  //The third egg
-  noStroke();
-  fill(247, 240, 225);
-  ellipse(310, 405, 45, 65);
-
-  //Spots on the eggs
-  function spots(x, s, w, h) {
-    noStroke();
-    fill(168, 156, 133);
-    ellipse(x, s, w, h);
-    ellipse(x + 25, s + 30, w, h);
-  }
-  spots(255, 392, 8, 10);
-  spots(298, 390, 8, 10);
-  spots(338, 392, 8, 10);
-
-  //Bird
-  function bird(x, y) {
-    //Rear wing
-    noStroke();
-    fill(255, 255, 255);
-    push();
-    translate(x + 57, y - 5);
-    rotate(2.2);
-    arc(0, 0, 150, 100, 0, PI);
-    pop();
-
-    //Body
-    fill(0, 150, 255);
-    noStroke();
-    arc(x, y, 250, 150, 0, PI);
-
-    //Head
-    fill(0, 150, 255);
-    noStroke();
-    push();
-    translate(x + 87, y + 9);
-    rotate(3.14);
-    arc(0, 0, 75, 75, 0, PI);
-    pop();
-
-    //Front wing
-    noStroke();
-    fill(20, 52, 164);
-    push();
-    translate(x - 14, y - 35);
-    rotate(0.5);
-    arc(0, 0, 150, 100, 0, PI);
-    pop();
-
-    //Belly
-    fill(255);
-    noStroke();
-    beginShape();
-    vertex(x - 50, y + 69);
-    bezierVertex(x - 50, y + 69, x + 10, y, x + 80, y + 58);
-    vertex(x - 50, y + 69);
-    bezierVertex(x - 50, y + 69, x + 10, y + 90, x + 80, y + 58);
-    endShape();
-
-    //Eye
-    fill(0, 0, 0);
-    noStroke();
-    push();
-    translate(x + 105, y - 10);
-    scale(9);
-    ellipse(0, 0, 1, 1);
-    pop();
-
-    //Worm
-    noFill();
-    stroke(222, 49, 99);
-    strokeWeight(1);
-    beginShape();
-    vertex(x + 160, y - 20);
-    bezierVertex(x + 160, y - 20, x + 138, y, x + 160, y + 15);
-    endShape();
-
-    //Nose
-    fill(54, 69, 79);
-    noStroke();
-    triangle(x + 122, y - 5, x + 150, y, x + 124, y + 10);
-
-    //Tail
-    fill(0, 150, 255);
-    noStroke();
-    triangle(x - 175, y - 30, x - 123, y, x - 180, y);
-
-    //Legs
-    noFill();
-    stroke(54, 69, 79);
-    strokeWeight(1);
-    //Left leg
-    line(x - 40, y + 72, x - 20, y + 105);
-    line(x - 20, y + 105, x, y + 100);
-    line(x - 20, y + 105, x, y + 105);
-    line(x - 20, y + 105, x, y + 110);
-
-    //Right leg
-    line(x + 45, y + 71, x + 65, y + 105);
-    line(x + 65, y + 105, x + 85, y + 100);
-    line(x + 65, y + 105, x + 85, y + 105);
-    line(x + 65, y + 105, x + 85, y + 110);
+  //Nest content
+  if (nestContent === "eggs") {
+    drawEggs();
+  } else if (nestContent === "chicks") {
+    drawChicks();
+  } else if (nestContent === "white and yolk") {
+    drawBrokenEggs();
   }
 
   //Bird drawing
@@ -299,16 +203,17 @@ function resultScreen() {
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(150, 115, 50);
-  rect(200, 200, 250, 65, 10);
+  rect(rectX, rectY, rectWidth, rectHeight, 10);
+  noStroke();
   fill(255, 255, 255);
   textAlign(CENTER);
   textSize(32);
-  text(resultMessage, width / 2, height / 2 - 20);
+  text(resultMessage, 700 / 2, 500 / 2 + 10);
   stroke(0, 0, 0);
   strokeWeight(1);
   fill(120, 84, 17);
   textSize(20);
-  text("Click to Restart", width / 2, height / 2 + 50);
+  text("Click to Restart", 700 / 2, 500 / 2 + 60);
 }
 
 //Gravity and movement
@@ -329,29 +234,188 @@ function gravity() {
 
 //Cleck landing
 function checkLanding() {
-  let birdCenter = birdX;
-  let nestLeft = 500 - nestWidth / 2 - 10; 
-  let nestRight = 500 + nestWidth / 2 + 10;
-
-  if (birdY >= nestY - 30 && birdY <= nestY + 10) {
-    if (abs(velocityY) <= safeLandingSpeed && birdCenter >= nestLeft && birdCenter <= nestRight) {
-      //When bird landed safely
-      resultMessage = "Great Job!";
+  if (birdY >= nestY - 20 && birdY <= nestY + 10) {
+    if (velocityY <= safeLandingSpeed) {
+      //When the bird landed safely
+      nestContent = "chicks";
       state = "result";
+      setTimeout(() => {
+        resultMessage = "Great Job!";
+        gameIsRunning = false;
+      }, 3000);
+      //When the bird landed too quickly
     } else {
-      //When bird landed too quickly
-      resultMessage = "Try again!";
+      nestContent = "white and yolk";
       state = "result";
+      setTimeout(() => {
+        resultMessage = "Try again!";
+        gameIsRunning = false;
+      }, 1000);
     }
   }
 }
 
+//Draw eggs
+function drawEggs() {
+  fill(247, 240, 225);
+  ellipse(270, 405, 45, 65);
+  ellipse(310, 405, 45, 65);
+  ellipse(350, 405, 45, 65);
+  //Spots on the eggs
+  noStroke();
+  fill(168, 156, 133);
+  ellipse(255, 392, 8, 10);
+  ellipse(280, 422, 8, 10);
+  ellipse(298, 390, 8, 10);
+  ellipse(323, 420, 8, 10);
+  ellipse(338, 392, 8, 10);
+  ellipse(363, 422, 8, 10);
+}
 
-//Start or restart the game
+//Draw chicks
+function chicks(x, y) {
+  noStroke();
+  fill(117, 163, 186);
+  //Head
+  ellipse(x, y + 5, 40, 40);
+  //Body
+  ellipse(x, y + 35, 45, 50);
+  //Legs
+  //The first leg
+  stroke(89, 71, 51);
+  line(x - 10, y + 57, x - 15, y + 70);
+  line(x - 17, y + 67, x - 12, y + 62);
+  line(x - 12, y + 62, x - 11, y + 68);
+  //The second leg
+  line(x + 5, y + 59, x + 10, y + 70);
+  line(x + 5, y + 68, x + 6, y + 62);
+  line(x + 7, y + 62, x + 13, y + 67);
+  //Wings
+  noStroke();
+  fill(117, 163, 186);
+  triangle(x + 19, y + 25, x + 45, y + 35, x + 19, y + 45);
+  triangle(x - 19, y + 25, x - 45, y + 35, x - 19, y + 45);
+  //Face
+  //Eye
+  noStroke();
+  fill(0);
+  ellipse(x + 12, y, 4, 4);
+  //Nose
+  noStroke();
+  fill(201, 157, 36);
+  triangle(x + 19, y + 5, x + 30, y, x + 19, y);
+}
+
+function drawChicks() {
+  chicks(310, 380);
+  chicks(260, 380);
+  chicks(360, 380);
+}
+
+//Draw broken eggs
+function drawBrokenEggs() {
+  noStroke();
+  fill(255);
+  ellipse(310, 410, 130, 50);
+  //White
+  beginShape();
+  vertex(245, 410);
+  bezierVertex(245, 380, 265, 380, 290, 390);
+  bezierVertex(330, 380, 360, 375, 375, 410);
+  bezierVertex(230, 430, 310, 450, 340, 430);
+  endShape();
+  //Yolk
+  noStroke();
+  fill(237, 186, 17);
+  ellipse(310, 410, 35, 20);
+  ellipse(280, 410, 35, 20);
+  ellipse(340, 410, 35, 20);
+}
+
+//Bird
+function bird(x, y) {
+  //Rear wing
+  noStroke();
+  fill(255, 255, 255);
+  push();
+  translate(x + 57, y - 5);
+  rotate(2.2);
+  arc(0, 0, 150, 100, 0, PI);
+  pop();
+  //Body
+  fill(0, 150, 255);
+  noStroke();
+  arc(x, y, 250, 150, 0, PI);
+  //Head
+  fill(0, 150, 255);
+  noStroke();
+  push();
+  translate(x + 87, y + 9);
+  rotate(3.14);
+  arc(0, 0, 75, 75, 0, PI);
+  pop();
+  //Front wing
+  noStroke();
+  fill(20, 52, 164);
+  push();
+  translate(x - 14, y - 35);
+  rotate(0.5);
+  arc(0, 0, 150, 100, 0, PI);
+  pop();
+  //Belly
+  fill(255);
+  noStroke();
+  beginShape();
+  vertex(x - 50, y + 69);
+  bezierVertex(x - 50, y + 69, x + 10, y, x + 80, y + 58);
+  vertex(x - 50, y + 69);
+  bezierVertex(x - 50, y + 69, x + 10, y + 90, x + 80, y + 58);
+  endShape();
+  //Eye
+  fill(0, 0, 0);
+  noStroke();
+  push();
+  translate(x + 105, y - 10);
+  scale(9);
+  ellipse(0, 0, 1, 1);
+  pop();
+  //Worm
+  noFill();
+  stroke(222, 49, 99);
+  strokeWeight(1);
+  beginShape();
+  vertex(x + 160, y - 20);
+  bezierVertex(x + 160, y - 20, x + 138, y, x + 160, y + 15);
+  endShape();
+  //Nose
+  fill(54, 69, 79);
+  noStroke();
+  triangle(x + 122, y - 5, x + 150, y, x + 124, y + 10);
+  //Tail
+  fill(0, 150, 255);
+  noStroke();
+  triangle(x - 175, y - 30, x - 123, y, x - 180, y);
+  //Legs
+  noFill();
+  stroke(54, 69, 79);
+  strokeWeight(1);
+  //Left leg
+  line(x - 40, y + 72, x - 20, y + 105);
+  line(x - 20, y + 105, x, y + 100);
+  line(x - 20, y + 105, x, y + 105);
+  line(x - 20, y + 105, x, y + 110);
+  //Right leg
+  line(x + 45, y + 71, x + 65, y + 105);
+  line(x + 65, y + 105, x + 85, y + 100);
+  line(x + 65, y + 105, x + 85, y + 105);
+  line(x + 65, y + 105, x + 85, y + 110);
+}
+
+//Start or restart game
 function mouseClicked() {
   if (state === "start") {
     state = "game";
-  } else if (state === "result") {
+  } else if (state === "result" && gameIsRunning === false) {
     resetGame();
   }
 }
