@@ -5,7 +5,7 @@ let acceleration = 0.2;
 let lift = -0.6;
 const nestY = 422;
 const nestWidth = 160;
-let safeLandingSpeed = 3;
+const safeLandingSpeed = 5;
 let resultMessage = "";
 let birdX;
 let nestContent = "eggs";
@@ -19,6 +19,8 @@ function resetGame() {
   resultMessage = "";
   state = "start";
   nestContent = "eggs";
+  //The game can run again
+  gameIsRunning = true;
 }
 
 function setup() {
@@ -30,11 +32,12 @@ function draw() {
   if (state === "start") {
     startScreen();
   } else if (state === "game") {
-    gameIsRunning = true;
-    gameScreen();
-    gravity();
-    checkLanding();
-  } else if (state === "result" && gameIsRunning === false) {
+    if (gameIsRunning) {
+      gameScreen();
+      gravity();
+      checkLanding();
+    }
+  } else if (state === "result") {
     resultScreen();
   }
 }
@@ -180,7 +183,7 @@ function gameScreen() {
   line(400, 440, 413, 445);
   noStroke();
 
-  //Nest content
+  //Nest content updates dynamically
   if (nestContent === "eggs") {
     drawEggs();
   } else if (nestContent === "chicks") {
@@ -188,7 +191,6 @@ function gameScreen() {
   } else if (nestContent === "white and yolk") {
     drawBrokenEggs();
   }
-
   //Bird drawing
   push();
   translate(0, 0);
@@ -214,13 +216,36 @@ function resultScreen() {
   fill(120, 84, 17);
   textSize(20);
   text("Click to Restart", 700 / 2, 500 / 2 + 60);
+
+  //Eggs for the result screen
+  stroke(214, 158, 90);
+  strokeWeight(1);
+  fill(250, 247, 242);
+  push();
+  translate(0, 0);
+  rotate(-0.2);
+  ellipse(250, 190, 65, 85);
+  rotate(+0.2);
+  ellipse(350, 135, 65, 85);
+  rotate(+0.3);
+  ellipse(440, 8, 65, 85);
+  pop();
+  //Spots on the eggs for result screen
+  noStroke();
+  fill(184, 149, 84);
+  ellipse(268, 120, 8, 10);
+  ellipse(300, 155, 8, 10);
+  ellipse(332, 120, 8, 10);
+  ellipse(365, 155, 8, 10);
+  ellipse(405, 120, 8, 10);
+  ellipse(425, 160, 8, 10);
 }
 
 //Gravity and movement
 function gravity() {
   velocityY += acceleration;
 
-  //Lift with spacebar
+  //Lift the bird with the spacebar
   if (keyIsDown(32)) {
     velocityY += lift;
   }
@@ -232,32 +257,35 @@ function gravity() {
   birdY = constrain(birdY, 0, height);
 }
 
-//Cleck landing
 function checkLanding() {
   if (birdY >= nestY - 20 && birdY <= nestY + 10) {
     if (velocityY <= safeLandingSpeed) {
-      //When the bird landed safely
+      //Change eggs to chicks
       nestContent = "chicks";
-      state = "result";
+      resultMessage = "Great Job!";
+      //Help from Liudmyla
       setTimeout(() => {
-        resultMessage = "Great Job!";
+        state = "result";
+        //Stop the game after showing the result
         gameIsRunning = false;
-      }, 3000);
-      //When the bird landed too quickly
+      }, 450);
+      // Crash landing
     } else {
+      // Change eggs to broken eggs
       nestContent = "white and yolk";
-      state = "result";
+      resultMessage = "Try again!";
       setTimeout(() => {
-        resultMessage = "Try again!";
+        state = "result";
+        //Stop the game after showing the result
         gameIsRunning = false;
-      }, 1000);
+      }, 450);
     }
   }
 }
 
 //Draw eggs
 function drawEggs() {
-  fill(247, 240, 225);
+  fill(250, 247, 242);
   ellipse(270, 405, 45, 65);
   ellipse(310, 405, 45, 65);
   ellipse(350, 405, 45, 65);
@@ -411,7 +439,7 @@ function bird(x, y) {
   line(x + 65, y + 105, x + 85, y + 110);
 }
 
-//Start or restart game
+//Start or restart the game
 function mouseClicked() {
   if (state === "start") {
     state = "game";
